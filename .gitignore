@@ -1,0 +1,14 @@
+# Egintorno virtual
+env/
+
+# Archivos temporales
+__pycache__/
+*.pyc
+*.pyo
+
+# Configuraciones locales
+.vscode/
+.DS_Store
+
+# Datos locales
+data/
