@@ -1,0 +1,69 @@
+# Amazon Reviews Clustering — Project in Progress
+
+This repository contains a technical project focused on building a pipeline to analyze and group Amazon product reviews using unsupervised clustering and semantic embeddings.
+
+---
+
+## Project Goal
+
+The objective is to develop a system capable of:
+
+- Group similar reviews with no previous tags.
+- Assign new reviews to the closest cluster or create a new one if it doesn't fit.
+- Loading large `.json.gz` Amazon review datasets efficiently.
+- Processing and cleaning raw review text.
+- Generating semantic embeddings using transformer-based models.
+- Grouping reviews into thematic clusters **without labels**.
+- Automatically generating meaningful labels for each cluster.
+- Exposing the results through an interactive Streamlit app.
+  
+
+---
+
+## Current Project Structure (evolving)
+
+```
+amazon-reviews/
+│
+├── src/ # Code for loading, preprocessing, embeddings, ect.
+│ └── load_data.py # Data loading with path validation
+│
+├── data/
+│ └── raw/ # Original .json.gz files (untouched and not uploaded to Github)
+│
+├── notebooks/ # Initial exploration and testing
+├── app/ # (To be implemented) Streamlit interface
+├── requirements.txt
+├── .gitignore
+└── README.md
+
+
+```
+---
+
+## Progress Checklist
+
+- [x] Virtual environment configured
+- [x] Dependencies installed (`pip install -r requirements.txt`)
+- [x] Sample dataset downloaded to `data/raw/`
+- [x] Basic data loading function implemented with file validation
+- [x] `src/` successfully tracked in Git
+- [ ] Explore dataset columns (`df.columns`, `df.head()`)
+- [ ] Select relevant fields for semantic analysis
+- [ ] Text cleaning module (normalization, stopwords, etc.)
+- [ ] Embedding generation
+- [ ] Clustering and evaluation
+- [ ] Streamlit visualization
+
+---
+
+## Next Steps
+
+1. Inspect the dataset and understand each field.
+2. Decide which columns will be kept for semantic processing.
+3. Create a clear and readable text preprocessing module.
+4. Run a first embedding test on a small subset before scaling.
+
+---
+
+> This README will be updated progressively as the project evolves. The idea is to keep the process transparent and incremental, rather than jumping straight to the final result.
