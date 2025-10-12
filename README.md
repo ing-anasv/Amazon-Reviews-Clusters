@@ -57,6 +57,16 @@ amazon-reviews/
 
 ---
 
+## Development Log (iterative progress)
+
+| Date        | Update                                                                                       |
+|-------------|----------------------------------------------------------------------------------------------|
+| Day 1 — Setup and Data load | Repository initialized and basic structure created (`src/`, `notebooks/`, `data/raw/`). Virtual environment configured and dependencies installed. Data Loading Module implemented with `load_data.py`. |
+| Day 2 — Initial EDA | Created `explore_data.ipynb` with preview to avoid memory issues. Confirmed available columns with 3 datasets and detected optional fields. |
+| **Next** | Define columns for analysis. |
+
+---
+
 ## Next Steps
 
 1. Inspect the dataset and understand each field.
