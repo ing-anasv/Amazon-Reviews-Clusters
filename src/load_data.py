@@ -1,5 +1,11 @@
 #Test 1: Load one file at time
 
+"""
+
+    This module defines two functions to load data from the data/raw directory. 
+    
+"""
+
 import pandas as pd
 from pathlib import Path
 
@@ -16,8 +22,6 @@ def load_info(file_path):
 
     """
 
-
-    f_path = "root/file_path"
     f_path= Path(file_path)
 
     # Check if the path is correct
