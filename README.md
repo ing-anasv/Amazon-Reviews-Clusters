@@ -48,9 +48,9 @@ amazon-reviews/
 - [x] Sample dataset downloaded to `data/raw/`
 - [x] Basic data loading function implemented with file validation
 - [x] `src/` successfully tracked in Git
-- [ ] Explore dataset columns (`df.columns`, `df.head()`)
-- [ ] Select relevant fields for semantic analysis
-- [ ] Text cleaning module (normalization, stopwords, etc.)
+- [x] Explore dataset columns (`df.columns`, `df.head()`)
+- [x] Select relevant fields for semantic analysis
+- [x] Text cleaning module (normalization, stopwords, etc.)
 - [ ] Embedding generation
 - [ ] Clustering and evaluation
 - [ ] Streamlit visualization
@@ -62,17 +62,10 @@ amazon-reviews/
 | Date        | Update                                                                                       |
 |-------------|----------------------------------------------------------------------------------------------|
 | Day 1 — Setup and Data load | Repository initialized and basic structure created (`src/`, `notebooks/`, `data/raw/`). Virtual environment configured and dependencies installed. Data Loading Module implemented with `load_data.py`. |
-| Day 2 — Initial EDA | Created `explore_data.ipynb` with preview to avoid memory issues. Confirmed available columns with 3 datasets and detected optional fields. |
-| **Next** | Define columns for analysis. |
+| Day 2 — Initial EDA | Created `explore_data.ipynb` with preview to avoid memory issues. Confirmed available columns with 3 datasets and detected optional fields. Created file `select_columns.py` to separate text columns from context columns for further processing. |
+| Day 3 — Data Cleaning | Created `clean_text.py` to clean text including: converting to lower case, emoji, spaces, punctuation and URL removal. |
+| **Next** | Text pre-processing. |
 
----
-
-## Next Steps
-
-1. Inspect the dataset and understand each field.
-2. Decide which columns will be kept for semantic processing.
-3. Create a clear and readable text preprocessing module.
-4. Run a first embedding test on a small subset before scaling.
 
 ---
 
