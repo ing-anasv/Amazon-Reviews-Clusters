@@ -47,6 +47,15 @@ amazon-reviews/
 
 ```
 ---
+### DISCLAIMER : Needed directory for the pipeline
+
+Before running the pipeline, the folder structure must be verified. Specifically check the  **data** directory that **is not included in the repository** so it should be created manually. Inside it ensure the following subdirectories are present:
+
+data/
+├── raw/ # Original files (.json o .json.gz)
+└── processed/ # Clean file(s) in .parquet format
+
+---
 
 ## Progress Checklist
 
@@ -71,8 +80,8 @@ amazon-reviews/
 | Day 1 — Setup and Data load | Repository initialized and basic structure created (`src/`, `notebooks/`, `data/raw/`). Virtual environment configured and dependencies installed. Data Loading Module implemented with `load_data.py`. |
 | Day 2 — Initial EDA | Created `explore_data.ipynb` with preview to avoid memory issues. Confirmed available columns with 3 datasets and detected optional fields. Created file `select_columns.py` to separate text columns from context columns for further processing. |
 | Day 3 — Data Cleaning | Created `clean_text.py` to clean text including: converting to lower case, emoji, spaces, punctuation and URL removal. |
-| Day 4 — Language Detection | Created `lang_detection.py` to detect the review's language using langdetec library. Also made some test on `explore_data.ipynb`. |
-| **Next** | Continue text pre-processing. |
+| Day 4 — Language Detection | Created `lang_detection.py` to detect the review's language using langdetec library. Also made some test on `explore_data.ipynb`. Created file `ingestion.py` to ingest data by chunk and process it correctly. |
+| **Next** | Fix the ingestion issues and add the parquet conversion. |
 
 
 ---
