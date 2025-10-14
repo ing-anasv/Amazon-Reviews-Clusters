@@ -2,8 +2,7 @@
 
 """
 
-This module is used to (initially) make a basic clean of the text to prepare it 
-for the embedding model.
+This module is used to clean of the text to prepare it for the embedding model.
 
 """
 import re  # for regex
