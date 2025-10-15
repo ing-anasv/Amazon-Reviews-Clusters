@@ -32,9 +32,12 @@ amazon-reviews/
 │ └── text
 │  └── clean_text.py # Cleans url, emojis, punctuation
 │  └── lang_detection.py # Language detection
+│ └── pipeline
+│  └── ingestion.py # Read files in chunks, process them and saves to parquet 
 │
 ├── data/
 │ └── raw/ # Original .json.gz files (untouched and not uploaded to Github)
+│ └── processed/ # Parquet file with processed data frame (not uploaded to Github)
 │
 ├── notebooks/ # Initial exploration and testing
 │ └── test_load_data.ipynb # Test data loading
@@ -81,7 +84,8 @@ data/
 | Day 2 — Initial EDA | Created `explore_data.ipynb` with preview to avoid memory issues. Confirmed available columns with 3 datasets and detected optional fields. Created file `select_columns.py` to separate text columns from context columns for further processing. |
 | Day 3 — Data Cleaning | Created `clean_text.py` to clean text including: converting to lower case, emoji, spaces, punctuation and URL removal. |
 | Day 4 — Language Detection | Created `lang_detection.py` to detect the review's language using langdetec library. Also made some test on `explore_data.ipynb`. Created file `ingestion.py` to ingest data by chunk and process it correctly. |
-| **Next** | Fix the ingestion issues and add the parquet conversion. |
+| Day 5 — Ingestion | Runned some tests to verify if the cleaning and language detection modules worked fine with chunk-loaded rows. Then used those tests to actually build the pipeline of ingestion-processing-data saving in parquet. **Issue found:** takes way to long to finish the ingestion process. |
+| **Next** | Fix the ingestion time issues and continue with the NLP processing. |
 
 
 ---

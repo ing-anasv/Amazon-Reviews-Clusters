@@ -7,7 +7,7 @@ This module is used to clean of the text to prepare it for the embedding model.
 """
 import re  # for regex
 
-#Remove URLS
+# Remove URLS
 
 def remove_urls(text):
 
@@ -19,23 +19,23 @@ def remove_urls(text):
     # + "match 1 or more repetitions of the preceding RE" (re documentation)
     url_pattern = r"http\S+ | www\.\S+"
 
-    #Re.sub (pattern, replacement, string)
+    # Re.sub (pattern, replacement, string)
     return re.sub(url_pattern, "", text)  # replace URLs with empty string
 
 
-#Remove punctuation
+# Remove punctuation
 
 def remove_punctuation(text):
 
     """
-    Removes common punctuation like ! ? , . ; : but keeps normal words intact.
+    Removes common punctuation like ! ? , . ; : but keeps normal words intact
 
     """
     punct = r"[!?.,;:]+"
     text = re.sub(punct, " ", text)  # Replace punctuation with a space to avoid word merging
     return text
 
-#Remove emojis
+# Remove emojis
 
 import re
 
@@ -43,10 +43,10 @@ def remove_emojis(text):
 
     """
 
-    Removes emojis from a text string.
+    Removes emojis from a text string
 
     """
-    #compile: turn the codes to regular expression objects
+    # compile: turn the codes to regular expression objects
     
     emojis = re.compile(
         "["                       
@@ -78,20 +78,20 @@ def clean(text):
     if not isinstance(text, str):
         return ""  # returns empty string to avoid problems with the model
     
-    #First remove URLS
+    # First remove URLS
     text = remove_urls(text)
 
-    #Remove punctuation
+    # Remove punctuation
     text = remove_punctuation(text)
 
-    #Remove emojis
+    # Remove emojis
     text = remove_emojis(text)
 
     # Lower case
     text = text.lower()
 
     # Leave just a normal space between words
-    text = text.split() #Lef the argument to none so it splits to any space
+    text = text.split() # Left the argument to none so it splits to any space
     text = " ".join(text)
 
     return text

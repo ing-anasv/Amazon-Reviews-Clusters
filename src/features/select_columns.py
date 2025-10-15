@@ -1,25 +1,25 @@
-#Select columns for further work
+# Select columns for further work
 
 """
 This module defines which columns will be used for the semantic
 embedding pipeline and which are kept for later interpretation.
 
 Since embedding works with natural language text, the columns included are only the ones
-with text fields. Other columns are kept as context columns. 
+with text fields. Other columns that were found relevant will be used as context columns (if needed). 
+
 """
 
 # Columns with natural text
 text_cols = ["reviewText", "summary"]  
 
 # Context columns - just in case 
-context_cols = ["asin", "overall", "reviewTime", "unixReviewTime",
-             "reviewerID", "reviewerName", "verified", "vote", "style", "image"]
+context_cols = ["asin", "overall", "unixReviewTime"]
 
 # Define the base column that needs to be in the dataset - reviewText - gives out the most information
 needed_col = ["reviewText"]
 
 
-#Function to take the columns of the data set
+# Function to take the columns of the data set
 
 def split_columns(data_cols):
    
