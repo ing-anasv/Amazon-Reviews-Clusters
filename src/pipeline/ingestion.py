@@ -15,8 +15,9 @@ This module is used for an adecuate data ingestion with the following parameters
 import pandas as pd
 from pathlib import Path
 import pyarrow as pa
+from multiprocessing import Pool, cpu_count
 from src.load_data import multiple_files  
-from src.text.clean_text import clean
+from src.text.clean_text import clean, clean_group
 from src.text.lang_detection import is_english
 from src.features.select_columns import split_columns
 
@@ -132,80 +133,98 @@ def save_to_parquet():
     if len(raw_files) == 0: 
          print("No files to process in data/raw.")
          return None # Break function if raw is empty
-    
-    # Create output file
-    parquet_path = output_dir / "dataset_embeddings.parquet"
-
-    # If the file already exists: delete to avoid duplicates and write from scratch
-    
-    if parquet_path.exists(): # checks if the file exists
-        print("Existing parquet file. Deleting it to start from scratch.")
-        parquet_path.unlink()  # deletes the file
-
-    # Initialize writer as none before the for loop. Should be as none because the df is the chunk
-    writer = None
 
     # Start processing 
     print("Processing started...")
 
     for f_path in raw_files:
+
+        # Initialize writer as none before the for loop. Should be as none because the df is the chunk 
+        writer = None
+
         print(f"\nProcessing file {f_path.name}\n")
+
+        # Since processing everything in just one file takes to long the cleaned columns will be saved in different files
+
+        source_name = f_path.stem 
+    
+        # If the file processing is interrupted the info will be saved in a temporary file to avoid skipping parts of the dataset
+        # If the file is processed completly it will change names to final
+        final_parquet = output_dir / f"{source_name}.parquet"
+        temp_parquet = output_dir / f"{source_name}.temp.parquet"
+
+        # Check if final file exists so we can skip that one and clean the next
+        if final_parquet.exists():
+            print(f"{source_name} already processed. Moving to the next file.")
+            continue
+
+        # If there is a temporary file, it needs to be deleted and start from scratch
+        if temp_parquet.exists():
+            print(f"{temp_parquet} incomplete. Starting from scratch...")
+            temp_parquet.unlink()  # Delete temporary file
 
         # First Step: Read file in chunks
         try:
-            read_chunk = pd.read_json(f_path, lines=True, chunksize=5000)  
+            read_chunk = pd.read_json(f_path, lines=True, chunksize=50000)  
         except Exception as e:
             print(f"ERROR: could not open file: {f_path.name}. Message: {e}")
             continue  # skip file if it cannot be read
 
-
+        #Initialize one pool per file
+        with Pool(cpu_count()) as p: # cpu_count returns cpu in system
         # Read chunks one by one
-        for chunk in read_chunk:
+            for chunk in read_chunk:
 
-            # Second Step - apply cleaning function
-            chunk["clean_review"] = chunk["reviewText"].apply(clean)
-            chunk["clean_summary"] = chunk["summary"].apply(clean)
+                # Second Step - apply cleaning function
+                chunk["clean_review"] = clean_group(chunk["reviewText"].tolist())
+                chunk["clean_summary"] = clean_group(chunk["summary"].tolist())
 
-            # Third step - Apply language detection function
-            # Using the reviewText as reference to keep or discard based on language
-            chunk["is_english"] = chunk["clean_review"].apply(is_english) 
 
-            # Filter only english
-            chunk = chunk[chunk["is_english"]]
+                # Third step - Apply language detection function
+                # Using the reviewText as reference to keep or discard based on language
+                chunk["is_english"] = p.map(is_english, chunk["clean_review"].tolist())
 
-            # Skip empty chunks to avoid writing empty data
-            if len(chunk) == 0:
-                print("Chunk skipped (no english reviews)")
-                continue
+                # Filter only english
+                chunk = chunk[chunk["is_english"]]
 
-            # Source column to keep track of the original category of the review
-            chunk["source"] = f_path.stem
+                # Skip empty chunks to avoid writing empty data
+                if len(chunk) == 0:
+                    print("Chunk skipped (no english reviews)")
+                    continue
 
-            # Step 4 - Use the select_columns module to pick the context columns
-            cols_dict = split_columns(chunk.columns)
-            context = cols_dict["context"]
+                # Source column to keep track of the original category of the review
+                chunk["source"] = f_path.stem
 
-            # Select columns of the process
-            selected_cols = ["clean_review", "clean_summary", "reviewText"] + context + ["source"]
-            chunk = chunk[selected_cols]
+                # Step 4 - Use the select_columns module to pick the context columns
+                cols_dict = split_columns(chunk.columns)
+                context = cols_dict["context"]
 
-            # Step 5 -  Convert dataframe to table that works with writer
-            table = pa.Table.from_pandas(chunk)
+                # Select columns of the process
+                selected_cols = ["clean_review", "clean_summary", "reviewText"] + context + ["source"]
+                chunk = chunk[selected_cols]
 
-            # Step 6 - Check if the file is empty or not
-            if writer is None: # is None on the first iteration of the first loop
-                # Parquet writer: parquet.ParquetWriter(where, schema (table already created), 
-                # compression (default is snappy), write_statistics (not needed, default = True),
-                writer = pq.ParquetWriter(parquet_path, table.schema, compression="snappy", write_statistics=False)
-           
-            # Step 7  Append chunk
-            writer.write_table(table)
+                # Step 5 -  Convert dataframe to table that works with writer
+                table = pa.Table.from_pandas(chunk)
 
-            print(f"{len(chunk)} rows appended to {parquet_path.name}")
+                # Step 6 - Check if the file is empty or not
+                if writer is None: # is None on the first chunk iteration
+                    # Parquet writer: parquet.ParquetWriter(where, schema (table already created), 
+                    # compression (default is snappy), write_statistics (not needed, default = True),
+                    print(f"\nWriting in {temp_parquet} started.")
+                    writer = pq.ParquetWriter(temp_parquet, table.schema, compression="snappy", write_statistics=False)
+            
+                # Step 7  Append chunk
+                writer.write_table(table)
 
-    # Close writer 
-    if writer: #First check if it changed from None to a writer object
-        writer.close()
+        # Close writer 
+        if writer: # First check if it changed from None to a writer object
+            writer.close()
+            # change the name to the final parquet
+            temp_parquet.rename(final_parquet)
+        else: # by the end the file is empty it needs to be deleted
+            if temp_parquet.exists(): 
+                temp_parquet.unlink()
+
 
         """
             DISCLAIMER - MEMORY MANAGEMENT
@@ -215,5 +234,5 @@ def save_to_parquet():
                 - for bigger chunk management memory release options should be considered
              
         """
-    print("\nFile dataset_embeddings.parquet generated successfully.")
+    print(f"\nFile {final_parquet} generated successfully.")
 

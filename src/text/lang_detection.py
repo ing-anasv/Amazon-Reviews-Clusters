@@ -23,7 +23,7 @@ def detect_lan(text):
     # if is not "empty" but is a string of whitespaces solve with strip
     text = text.strip()
 
-    # To identify the actual language 2 words (at least) are neededed
+    # To identify the actual language 2 words (at least) are needed
     if len(text.split()) < 2: # .split to actually know how many words
         return "unknown"
 

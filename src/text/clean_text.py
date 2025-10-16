@@ -96,3 +96,16 @@ def clean(text):
 
     return text
 
+def clean_group(text_group): #Use this to clean in batches so when called in the pipeline doesn't do it on each row separately
+    
+    """
+    Input: list of text.
+    Output: cleaned list.
+
+    """
+    cleaned_texts = []  # store the results
+
+    for text in text_group:
+        cleaned_texts.append(clean(text)) 
+
+    return cleaned_texts
