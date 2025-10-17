@@ -1,15 +1,15 @@
-# Egintorno virtual
+# Virtual enviroment 
 env/
 
-# Archivos temporales
+# Temporary files
 __pycache__/
 *.pyc
 *.pyo
 
-# Configuraciones locales
+# Local config
 .vscode/
 .DS_Store
 
-# Datos locales
+# Local data
 data/
 models/
