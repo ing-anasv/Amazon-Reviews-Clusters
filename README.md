@@ -34,6 +34,8 @@ amazon-reviews/
 │  └── lang_detection.py # Language detection
 │ └── pipeline
 │  └── ingestion.py # Read files in chunks, process them and saves to parquet 
+│ └── models
+│  └── lid.176.ftz # Model to detect language using fasttext
 │
 ├── data/
 │ └── raw/ # Original .json.gz files (untouched and not uploaded to Github)
@@ -54,10 +56,13 @@ amazon-reviews/
 
 Before running the pipeline, the folder structure must be verified. Specifically check the  **data** directory that **is not included in the repository** so it should be created manually. Inside it ensure the following subdirectories are present:
 
+```
+
 data/
 │ ├── raw/ # Original files (.json o .json.gz)
 │ └── processed/ # Clean file(s) in .parquet format
 
+```
 ---
 
 ## Progress Checklist
@@ -86,7 +91,8 @@ data/
 | Day 4 — Language Detection | Created `lang_detection.py` to detect the review's language using langdetec library. Also made some test on `explore_data.ipynb`. Created file `ingestion.py` to ingest data by chunk and process it correctly. |
 | Day 5 — Ingestion | Runned some tests to verify if the cleaning and language detection modules worked fine with chunk-loaded rows. Then used those tests to actually build the pipeline of ingestion-processing-data saving in parquet. **Issue found:** takes way to long to finish the ingestion process. |
 | Day 6 — Ingestion Time Issues | Changed .apply() to a function that can process rows in groups or batches. The file was taking too long so the library  **multiprocessing** was implemented. Even after those tries, a 3GB file in .json.gz format took 9 hours to be processed. More optimization needs to be done. |
-| **Next** | Fix the ingestion time issues. |
+| Day 7 — Continue with Ingestion Time Issues | Using prints before each process helped identify the part of the code that took the longest: language detection. Based on this, a decision was made to change the library from *langdetect* to *fasttext*. With this change the data ingestion takes less time. |
+| **Next** | Merge all the processed files in one. |
 
 
 ---

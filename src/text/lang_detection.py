@@ -6,7 +6,12 @@ This module is designed to detect language anf filter only english reviews
 
 """
 
-from langdetect import detect, LangDetectException
+# from langdetect import detect, LangDetectException Not used - too slow
+# Library changed to fasttext to optimize time
+import fasttext
+
+# Load fasttext model
+ft_model = fasttext.load_model("models/lid.176.ftz")
 
 def detect_lan(text):
 
@@ -29,11 +34,17 @@ def detect_lan(text):
 
     # Detect language
     try:
-        return detect(text)
-    except LangDetectException: # error when language is not recognized
-        return "unknown"
+        prediction = ft_model.predict(text) #output ((__label__en),array[value])
+        lan = prediction[0][0].replace("__label__", "")
+        confidence = prediction[1][0] 
+
+        # Only use english reviews over 0.8 precission to make sure the filter works properly
+        if confidence >= 0.8:
+            return lan
+        else:
+            return "unknown"
     except:
-        return "unknown" # other possible errors
+        return "unknown" # Not recognized
 
 
 def is_english(text):
