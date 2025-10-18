@@ -15,11 +15,13 @@ This module is used for an adecuate data ingestion with the following parameters
 import pandas as pd
 from pathlib import Path
 import pyarrow as pa
+import pyarrow.parquet as pq
 from multiprocessing import Pool, cpu_count
 from src.load_data import multiple_files  
 from src.text.clean_text import clean, clean_group
 from src.text.lang_detection import is_english
 from src.features.select_columns import split_columns
+from src.pipeline.merge_parquet import merge_par
 
 
 
@@ -122,8 +124,6 @@ def save_to_parquet():
     - Save to a single Parquet file
 
     """
-    # Import parquet - is used only in this function
-    import pyarrow.parquet as pq
 
     # List files
     raw_files = multiple_files()
