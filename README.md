@@ -32,19 +32,24 @@ amazon-reviews/
 │ └── text
 │  └── clean_text.py # Cleans url, emojis, punctuation
 │  └── lang_detection.py # Language detection
+│  └── combine_columns.py # Merge summary and reviewText
+│  └── spacy_process.py # Spacy tokenization, lematize and stopword removal 
 │ └── pipeline
 │  └── ingestion.py # Read files in chunks, process them and saves to parquet 
 │  └── merge_parquet.py # Reads parquet files and merge them in one
+│  └── spacy_for_embbedings.py # Process text with spacy and saves to parquet to be ready for embbedings
 │ └── models
 │  └── lid.176.ftz # Model to detect language using fasttext
 │
 ├── data/
 │ └── raw/ # Original .json.gz files (untouched and not uploaded to Github)
 │ └── processed/ # Parquet file with processed data frame (not uploaded to Github)
+│  └── spacy # Saves spacy processed parquet files
 │
 ├── notebooks/ # Initial exploration and testing
 │ └── test_load_data.ipynb # Test data loading
 │ └── explore_data.py # Data exploration
+│ └── embeddings_test.py # Test Spacy functions
 ├── app/ # (To be implemented) Streamlit interface
 ├── requirements.txt
 ├── .gitignore
@@ -62,6 +67,7 @@ Before running the pipeline, the folder structure must be verified. Specifically
 data/
 │ ├── raw/ # Original files (.json o .json.gz)
 │ └── processed/ # Clean file(s) in .parquet format
+│  └── spacy # Saves spacy processed parquet files
 
 │ └── models
 │  └── lid.176.ftz # Model to detect language using fasttext
@@ -97,6 +103,10 @@ data/
 | Day 6 — Ingestion Time Issues | Changed .apply() to a function that can process rows in groups or batches. The file was taking too long so the library  **multiprocessing** was implemented. Even after those tries, a 3GB file in .json.gz format took 9 hours to be processed. More optimization needs to be done. |
 | Day 7 — Continue with Ingestion Time Issues | Using prints before each process helped identify the part of the code that took the longest: language detection. Based on this, a decision was made to change the library from *langdetect* to *fasttext*. With this change the data ingestion takes less time. Created file `merge_parquet.py` that takes all the .parquet files and merges them in one. **Issue**: Merge is crashing memory. |
 | Day 8 — Continue with Merging file | Besides the memory crashing issue, it was found that the module was not appending new entries but deleting the old ones, to solve this, changed open mode to *binary append*. To solve the main problem, the reading function was changed from *read_table* to *ParqueFile* and loading in batches was implemented. Finally modified the module structure to add the name of the files that were already on the final parquet in a `.txt` document to save processing time. |
+| Day 9 — SpaCy Documentation | Notebook `embeddings_test` was created to work with SpaCy and the next step of text processing. Since all of the functions and modules of SpaCy were unkwnon to the developer, day 9 was used to read and understand everything to apply it later. |
+| Day 10 — Use SpaCy | Started to run some test in the notebook, to load the model, and test all of the functions and methods of the library. During this test two issues were found: ** "-" , "(", ")"** were stil in the text and contractions like **don't** were lemmatized as **do** so the negative meaning was lost. This issue was solved.|
+| Day 11 — Save Spacy Processing to Parquet | Tested `spacy_process.py` and `spacy_for_embedding.py` in small chunks ando works fine. There is an issue with the time it takes to process the file and save to a new parquet. A few adjustments were made. |
+| Day 12 — Optimizing Processing Time | Made some changes in  `spacy_process.py` and `spacy_for_embedding.py` to check if the processing time was better. No changes noted. The decision was made to change the function in the `spacy_for_embedding.py` to work with the library  **multiprocessing**. With this change the five files that were in the `data/processed` directory could readed and cleaned at the same time using 75% of the CPU cores. Within 20 minutes 3 out of the 5 files were already saved in a new directory `data/processed/spacy` but the other 2 (the larger ones) were still in process. At the end all the processing took 254 minutes which is an improvement compared to the initial 510 minutes. The `merge_parquet.py` was modified to adjust it to the changes.| 
 | **Next** | Start with embeddings. |
 
 

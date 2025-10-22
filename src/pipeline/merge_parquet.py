@@ -18,13 +18,13 @@ def merge_par():
     """
 
     # Directory to look for
-    directory = Path("data/processed")
+    directory = Path("data/processed/spacy")
 
     # Final file name
-    final_file = directory / "dataset_embedding.parquet"
+    final_file = directory / "dataset_embedding_spacy.parquet"
 
     # File with the name of the processed datasets that are already in the parquet
-    processed_txt = directory / "processed_sources.txt"
+    processed_txt = directory / "processed_spacy_sources.txt"
 
 
     # Error parquet size 0, delete it
@@ -43,14 +43,14 @@ def merge_par():
 
 
     # Find parquets not including the dataset_embedding
-    files = list(directory.glob("*.parquet")) 
+    files = list(directory.glob("*_spacy.parquet")) 
 
     # Filter files NOT included
     new_files = []
 
     for f in files:
         source_name = f.stem 
-        if source_name not in processed_sources and source_name != "dataset_embedding":
+        if source_name not in processed_sources and source_name != "dataset_embedding_spacy":
             new_files.append(f)
 
     # CASE 1: If the final file doesn't exists - Create it
@@ -61,7 +61,7 @@ def merge_par():
         writer = None
 
         for par in new_files:
-            # LRead in batches
+            # Read in batches
             pf = pq.ParquetFile(par)
             if writer is None:
                 # Take schema first
